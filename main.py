@@ -10,64 +10,41 @@ import bd_sql_server
 #    bd_cassandra.query_data_cassandra()
 
 def login():
-    print("Bienvenido a la aplicación.")
-    rol = int(input("¿Eres cliente o inquilino? (1 para cliente/ 2 parainquilino): ")).strip().lower()
+    print("Bienvenido a despegar.")
     
-    if rol == 1:  # Suponiendo que rol es un número entero
-    # Crear la lista para los números de teléfono
-        telefonos = []
+    telefonos = []
+#hacer reserva o crear hotel
+    while True:
+        telefono = input("Ingresa teléfono: ")
+        telefonos.append(telefono)  # Agregar el teléfono a la lista
+        continuar = input("¿Deseas agregar otro teléfono? (sí/no): ").strip().lower()
+        if continuar != 'si':
+            break
 
-        while True:
-            telefono = input("Ingresa teléfono: ")
-            telefonos.append(telefono)  # Agregar el teléfono a la lista
+    data = {
+    "_id": ObjectId(),  # Generar un nuevo ObjectId
+    "nombre": input("Ingresa tu nombre y apellido: "),
+    "direccion": {
+        "calle": input("Ingresa tu calle: "),
+        "numero": input("Ingresa el número: "),
+        "ciudad": input("Ingresa la ciudad: "),
+        "pais": input("Ingresa tu país: ")
+    },
+    "telefono": telefonos,  
+    "email": input("Ingresa tu email: ")
+    }
+    bd_mongo.insertar_cliente(data)
 
-            # Preguntar si desea agregar otro número
-            continuar = input("¿Deseas agregar otro teléfono? (sí/no): ").strip().lower()
-            if continuar != 'sí':
-                break
-
-        data = {
-        "_id": ObjectId(),  # Generar un nuevo ObjectId
-        "nombre": input("Ingresa tu nombre y apellido: "),
-        "direccion": {
-            "calle": input("Ingresa tu calle: "),
-            "numero": input("Ingresa el número: "),
-            "ciudad": input("Ingresa la ciudad: "),
-            "pais": input("Ingresa tu país: ")
-        },
-        "telefono": telefonos,  # Asignar la lista de teléfonos
-        "email": input("Ingresa tu email: ")
-        }
-        bd_mongo.insertar_cliente(data)
-
-        print("Comencemos hacer tu reserva!")
-
-        servicio = input("Queres reservar un vuelo, un hotel o un paquete?:")
-        if (servicio == "Vuelo" or "vuelo" or "VUELO"):
-            print("Los vuelos disponibles son:"+ bd_mongo.consultar_vuelos)
-            realizar_reserva
+        
 
 
 
-def insert_inquilino(data):
-    # Aquí va tu lógica para insertar en MongoDB la información del inquilino
-    bd_mongo.insert_inquilino(data)  # Suponiendo que tienes esta función en tu archivo bd_mongo.py
-    print("Inquilino insertado correctamente.")
-
-def run_mongo_operations():
-    rol, user_data = login()
-    
-    if user_data is None:
-        return  # Si el rol es inválido, salimos
-
-    if rol == "cliente":
-        insert_cliente(user_data)
-    elif rol == "inquilino":
-        insert_inquilino(user_data)
 
 
 def run_mongo_operations():
-    bd_mongo.insert_data_mongodb()
+    login()
+    bd_mongo.view_all_documents
+    
     
 
 #def run_sql_server_operations():
@@ -87,3 +64,10 @@ if __name__ == "__main__":
     # Ejecutar las operaciones de SQL Server
     #print("\nOperaciones en SQL Server:")
     #run_sql_server_operations()
+
+
+#DEPENDE EL CASO DE USO USO UNA HERRAMIENTA U LA OTRA, DEPENDE 
+
+#clientes -- mongo xq no se vuelve a modificar su datos
+# ciudad y paises -- cassandra y hoteles tmb
+# reservas sql
