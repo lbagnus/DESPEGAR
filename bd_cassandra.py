@@ -3,7 +3,7 @@ monkey.patch_all()
 from cassandra.cluster import Cluster
 
 def connect_cassandra():
-    cluster = Cluster(['127.0.0.1']) #ip de docker
+    cluster = Cluster(['localhost'])
     session = cluster.connect()
 
 
@@ -20,24 +20,43 @@ def connect_cassandra():
 def create_tables_cassandra():
     session = connect_cassandra()
 
-    # Crear tabla de clientes
-    session.execute("""
-    CREATE TABLE IF NOT EXISTS clientes (
-        id_cliente UUID PRIMARY KEY,
-        nombre text,
-        direccion text,
-        telefono text,
-        email text
-    );
-    """)
-
-    # Crear tabla de reservas
-    session.execute("""
-    CREATE TABLE IF NOT EXISTS reservas (
+    #Crear tabla de reservas general -- esta capaz la pasamos a mongo
+    #session.execute("""
+    """CREATE TABLE IF NOT EXISTS reservas_general (
         id_reserva UUID PRIMARY KEY,
         id_cliente UUID,
+        tipo_servicio text, 
+        destino text, 
         fecha_reserva date,
-        estado text
+        estado text,
+        monto_Total double, 
+        nombre_cliente text, 
+    );
+    """
+    #""")
+
+    session.execute("""
+    CREATE TABLE IF NOT EXISTS reservas_por_destino (
+    fecha date,
+    destino text,
+    reservas int,
+    PRIMARY KEY (fecha, destino)
+    );
+    """)
+    session.execute("""
+    CREATE TABLE IF NOT EXISTS alojamientos_solicitados (
+    tipo_alojamiento text,
+    cantidad int,
+    PRIMARY KEY (tipo_alojamiento, cantidad)
+    ) with clustering order by (cantidad ASC);
+    """)
+    session.execute("""
+    CREATE TABLE IF NOT EXISTS ciudades_demandadas (
+    pais text,
+    ciudad text,
+    cantidad int
+    PRIMARY KEY (pais, ciudad, cantidad)
+    with clustering order by (cantidad ASC)
     );
     """)
 

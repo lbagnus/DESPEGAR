@@ -25,6 +25,23 @@ def run_mongo_operations():
  #  bd_sql_server.query_data_sql_server()
 
 if __name__ == "__main__":
+    bd_cassandra.connect_cassandra()
+    while True:
+        print("Comencemos... Elige tu caso de uso")
+        print("1.login\n2. Agregar alojamiento \n3. Hacer una reserva\n4. Ver casos de uso\n5. Deseo terminar")
+        opcion = input("Selecciona: ")
+        if opcion == "1":
+            bd_mongo.login()
+        elif opcion == "2":
+            bd_mongo.insertar_hotel()
+        elif opcion == "3":
+            print()
+        elif opcion == "4":
+            print()
+        else:
+            break
+        
+    
 
     #Ejecutar las operaciones de MongoDB
     print("\nOperaciones en MongoDB:")

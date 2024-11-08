@@ -65,8 +65,10 @@ def operaciones():
                 "calle": input("Ingresa la calle: "),
                 "numero": input("Ingresa el número: "),
                 "ciudad": input("Ingresa la ciudad: "),
-                "pais": input("Ingresa el país: ")
+                "pais": input("Ingresa el país: "),
+                "zona": input("Centrica o periferia: ")
             },
+            "tipo_alojamiento": input("Ingrese el tipo de alojamiento: "),
             "nEstrellas": input("Ingresa el número de estrellas: "),
             "tipo_Habitaciones" : habitaciones(),
             "precio" : int(input("Ingrese el precio por noche: ")),
