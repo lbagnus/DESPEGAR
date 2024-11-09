@@ -5,8 +5,8 @@ def connect_sql_server():
         'DRIVER={SQL Server};'
         'SERVER=localhost;'  # Cambia según tu configuración
         'DATABASE=agencia_viajes;'  # Base de datos SQL Server
-        'UID=tu_usuario;'  # Cambia 'tu_usuario' por tu usuario
-        'PWD=tu_contraseña;'  # Cambia 'tu_contraseña' por tu contraseña
+        'UID=user_despegar;'  # Cambia 'tu_usuario' por tu usuario
+        'PWD=diegopablo;'  # Cambia 'tu_contraseña' por tu contraseña
     )
     return connection
 
@@ -14,48 +14,67 @@ def create_tables_sql_server():
     connection = connect_sql_server()
     cursor = connection.cursor()
 
-    # Crear tabla de clientes
+    # Crear tabla de paises
     cursor.execute("""
-    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='clientes' AND xtype='U')
-    CREATE TABLE clientes (
-        id_cliente INT IDENTITY PRIMARY KEY,
-        nombre NVARCHAR(100),
-        direccion NVARCHAR(255),
-        telefono NVARCHAR(15),
-        email NVARCHAR(100)
+    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='PAIS' AND xtype='U')
+    CREATE TABLE PAIS (
+        id_pais int PRIMARY KEY,
+        nombre NVARCHAR(20),
+        continente NVARCHAR(15),
+        codigo_pais NVARCHAR(5)  -- Corregido de 'narchar' a 'NVARCHAR'
     );
     """)
+    
+    # Crear tabla de ciudades
+    cursor.execute("""
+    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='CIUDAD' AND xtype='U')
+    CREATE TABLE CIUDAD (
+        id_ciudad int  PRIMARY KEY,
+        id_pais int,
+        nombre NVARCHAR(20),
+        codigo_postal NVARCHAR(5),  -- Corregido de 'narchar' a 'NVARCHAR'
+        CONSTRAINT FK_Ciudad_Pais FOREIGN KEY (id_pais) REFERENCES PAIS (id_pais)
+    );
+    """)
+    
+    # Confirmar la creación de las tablas
+    connection.commit()
+    cursor.close()
+    connection.close()
 
-    # Crear tabla de reservas
+
+def insert_data_sql_server():
+    connection = connect_sql_server()
+    cursor = connection.cursor()
+    #cursor.execute("DBCC CHECKIDENT ('PAIS', RESEED, 0);")
     cursor.execute("""
-    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='reservas' AND xtype='U')
-    CREATE TABLE reservas (
-        id_reserva INT IDENTITY PRIMARY KEY,
-        id_cliente INT,
-        fecha_reserva DATE,
-        estado NVARCHAR(50),
-        FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
-    );
-    """)
+    INSERT INTO PAIS (id_pais, nombre, continente, codigo_pais) 
+    VALUES 
+        (1,'Argentina', 'América del Sur', 'ARG'),
+        (2,'España', 'Europa', 'ESP'),
+        (3,'Estados Unidos', 'América Norte', 'USA'),
+        (4,'Francia', 'Europa', 'FRA'),
+        (5,'Australia', 'Oceanía', 'AUS');
+        """)
+
+    
 
     connection.commit()
     cursor.close()
     connection.close()
 
-def insert_data_sql_server():
+def insert_data_sql_server2():
     connection = connect_sql_server()
     cursor = connection.cursor()
-
-    # Insertar datos en clientes
+    #cursor.execute("DBCC CHECKIDENT ('CIUDAD', RESEED, 0);")
     cursor.execute("""
-    INSERT INTO clientes (nombre, direccion, telefono, email)
-    VALUES ('Juan Pérez', 'Calle Falsa 123', '12345678', 'juan@example.com');
-    """)
-
-    # Insertar datos en reservas
-    cursor.execute("""
-    INSERT INTO reservas (id_cliente, fecha_reserva, estado)
-    VALUES (1, '2024-10-23', 'confirmada');
+    INSERT INTO CIUDAD (id_ciudad, id_pais, nombre, codigo_postal) 
+    VALUES 
+        (1,1, 'Buenos Aires', 'C1000'),
+        (2,2, 'Madrid', '28001'),
+        (3,3, 'Nueva York', '10001'),
+        (4,4, 'París', '75001'),
+        (5,5, 'Sídney', '2000');
     """)
 
     connection.commit()

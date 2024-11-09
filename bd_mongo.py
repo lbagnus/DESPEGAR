@@ -3,6 +3,7 @@ from datetime import datetime
 import random
 import json
 from bson import ObjectId
+import bd_cassandra
 
 def connect_mongodb():
     client = MongoClient('mongodb://localhost:27017/')  # Cambia si tienes otra configuración

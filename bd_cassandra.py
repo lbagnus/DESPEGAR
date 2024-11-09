@@ -1,8 +1,10 @@
 from gevent import monkey
 monkey.patch_all()
 from cassandra.cluster import Cluster
+from cassandra.query import SimpleStatement
 
 def connect_cassandra():
+    print("llegue")
     cluster = Cluster(['localhost'])
     session = cluster.connect()
 
@@ -20,60 +22,56 @@ def connect_cassandra():
 def create_tables_cassandra():
     session = connect_cassandra()
 
-    #Crear tabla de reservas general -- esta capaz la pasamos a mongo
-    #session.execute("""
-    """CREATE TABLE IF NOT EXISTS reservas_general (
-        id_reserva UUID PRIMARY KEY,
-        id_cliente UUID,
-        tipo_servicio text, 
-        destino text, 
-        fecha_reserva date,
-        estado text,
-        monto_Total double, 
-        nombre_cliente text, 
-    );
-    """
-    #""")
-
     session.execute("""
     CREATE TABLE IF NOT EXISTS reservas_por_destino (
-    fecha date,
-    destino text,
-    reservas int,
-    PRIMARY KEY (fecha, destino)
+        fecha date,
+        destino text,
+        reservas counter,
+        PRIMARY KEY (fecha, destino)
     );
-    """)
+""")
     session.execute("""
     CREATE TABLE IF NOT EXISTS alojamientos_solicitados (
     tipo_alojamiento text,
-    cantidad int,
-    PRIMARY KEY (tipo_alojamiento, cantidad)
-    ) with clustering order by (cantidad ASC);
+    cantidad counter,
+    PRIMARY KEY (tipo_alojamiento)
+    ) ;
     """)
     session.execute("""
     CREATE TABLE IF NOT EXISTS ciudades_demandadas (
-    pais text,
-    ciudad text,
-    cantidad int
-    PRIMARY KEY (pais, ciudad, cantidad)
-    with clustering order by (cantidad ASC)
-    );
+        pais text,
+        ciudad text,
+        cantidad counter,
+        PRIMARY KEY (pais, ciudad)
+    ) WITH CLUSTERING ORDER BY (ciudad ASC);
     """)
 
-def insert_data_cassandra():
+def insertar_contador_destino(fecha, destino):
     session = connect_cassandra()
-
-    # Insertar datos en clientes
+    
+    # Incrementa el contador directamente, lo creará si no existe
     session.execute("""
-    INSERT INTO clientes (id_cliente, nombre, direccion, telefono, email)
-    VALUES (uuid(), 'Juan Pérez', 'Calle Falsa 123', '12345678', 'juan@example.com');
-    """)
+        UPDATE reservas_por_destino
+        SET reservas = reservas + 1
+        WHERE fecha = %s AND destino = %s
+    """, (fecha, destino))
 
-    # Insertar datos en reservas
+def insertar_alojamientos_solicitados(tipo):
+    session = connect_cassandra()
     session.execute("""
-    INSERT INTO reservas (id_reserva, id_cliente, fecha_reserva, estado)
-    VALUES (uuid(), uuid(), '2024-10-23', 'confirmada');
-    """)
+                UPDATE alojamientos_solicitados
+                SET cantidad = cantidad + 1
+                where tipo = %s 
+                        """, (tipo))
+    
+
+def insertar_ciudades_demandadas(pais,ciudad):
+    session = connect_cassandra()
+    session.execute("""
+                UPDATE ciudades_demandadas
+                SET cantidad = cantidad + 1
+                where pais = %s and ciudad = %s 
+                        """,(pais, ciudad))
 
 def query_data_cassandra():
     session = connect_cassandra()

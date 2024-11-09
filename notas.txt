@@ -1,0 +1,18 @@
+consulta para buscar el mayor de los alojamientos_solicitados
+
+def obtener_tipo_alojamiento_mas_solicitado():
+    session = connect_cassandra()
+    
+    # Ejecutar una consulta que recupere todos los registros de la tabla
+    rows = session.execute("SELECT tipo_alojamiento, cantidad FROM alojamientos_solicitados")
+    
+    # Buscar el registro con el valor máximo en `cantidad`
+    tipo_mas_solicitado = max(rows, key=lambda row: row.cantidad, default=None)
+    
+    # Imprimir o retornar el resultado
+    if tipo_mas_solicitado:
+        print(f"El tipo de alojamiento más solicitado es '{tipo_mas_solicitado.tipo_alojamiento}' con {tipo_mas_solicitado.cantidad} reservas.")
+    else:
+        print("No hay datos en la tabla alojamientos_solicitados.")
+    
+    return tipo_mas_solicitado
