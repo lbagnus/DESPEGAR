@@ -16,16 +16,6 @@ def disponibilidad():
     random_bool = bool(random.randint(0, 1))
     return random_bool
 
-def habitaciones():
-    habitaciones = []
-    i = 0
-    n = int(input("Cuantas habitaciones tiene? "))
-    while i < n :
-        habitacion = input ("Ingresa el tipo de habitacion (doble o simple): ")
-        habitaciones.append(habitacion)
-        i += 1
-    return habitaciones
-
 def telefono():
     telefonos = []
     while True:
@@ -84,7 +74,7 @@ def data_hotel():
             },
             "tipo_alojamiento": input("Ingrese el tipo de alojamiento: "),
             "nEstrellas": input("Ingresa el número de estrellas: "),
-            "tipo_Habitaciones" : habitaciones(),
+            "tipo_Habitaciones" : input("Ingrese el tipo de habitacion: "),
             "precio" : int(input("Ingrese el precio por noche: ")),
             "disponibilidad": disponibilidad(),
             "fecha": datetime.now(),
@@ -897,9 +887,57 @@ def consultar_hotel(ciudad):
     
     print("No hay más alojamiento disponibles.")
     return None
+def consultar_paquete(ciudad):
+    paquetes = list(db.paquetes.find({"ciudad": ciudad}))
+    
+    if not paquetes:
+        print("No hay paquetes disponibles en", ciudad)
+        return 
 
+    for i, paquetes in enumerate(paquetes, 1):
+        print(f"<< {i}. PAQUETE DE ALOJAMIENTO >>")
+        print(f"ID: {paquetes['_id']}")
+        print(f"Nombre: {paquetes['nombre']}")
+        print(f"Descripción: {paquetes['descripcion']}")
+        print(f"Precio individual: ${paquetes['precio']}")
+        print(f"Ciudad: {paquetes['ciudad']}")
+        print("Fechas: ")
+        for fecha in paquetes["fechas"]:
+            print(f"    - {fecha.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Noches: {paquetes['noches']}")
 
+        print("\nVuelo:")
+        vuelo = paquetes["vuelo"]
+        print(f"    Número de vuelo: {vuelo['nro_vuelo']}")
+        print(f"    Ciudad origen: {vuelo['ciudad_origen']}")
+        print(f"    Ciudad destino: {vuelo['ciudad_destino']}")
+        print(f"    Fecha salida: {vuelo['fecha_salida'].strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"    Fecha llegada: {vuelo['fecha_llegada'].strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"    Duración: {vuelo['duracion']}")
+        print(f"    Aerolínea: {vuelo['aerolinea']}")
 
+        print("\nHotel:")
+        hotel = paquetes["hotel"]
+        print(f"    Nombre: {hotel['nombre']}")
+        print(f"    Dirección: {hotel['direccion']}")
+        print(f"    Estrellas: {hotel['estrellas']}")
+        print(f"    Habitación: {hotel['habitacion']}")
+        print(f"    Alojamiento: {hotel['alojamiento']}")
+
+        print(f"\nPrecio Total: ${paquetes['precio_total']}\n")
+       
+        print("-" * 40)  # Línea separadora
+        
+        # Preguntar si desea reservar
+        respuesta = input("¿Desea reservar este paquete? (si/no): ").strip().lower()
+        if respuesta == "si":
+            print("Procesando la reserva del paquete...")
+            return paquetes 
+        
+        print("Mostrando el siguiente paquete...\n")
+    
+    print("No hay más alojamiento disponibles.")
+    return None
 
 
 def consultar_reserva():

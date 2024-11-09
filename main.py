@@ -25,19 +25,19 @@ def run_mongo_operations():
  #  bd_sql_server.query_data_sql_server()
 
 if __name__ == "__main__":
-    bd_sql_server.connect_sql_server()
-    bd_cassandra.connect_cassandra()
-    bd_cassandra.create_tables_cassandra()
-    bd_cassandra.insertar_contador_destino("2024-11-01","Colombia")
-    bd_cassandra.insertar_contador_destino("2024-11-02","Colombia")
-    bd_cassandra.insertar_contador_destino("2024-11-02","Brasil")
-    bd_cassandra.insertar_contador_destino("2024-11-08","Brasil")
+    #bd_sql_server.connect_sql_server()
+    #bd_cassandra.connect_cassandra()
+    #bd_cassandra.create_tables_cassandra()
+    #bd_cassandra.insertar_contador_destino("2024-11-01","Colombia")
+    #bd_cassandra.insertar_contador_destino("2024-11-02","Colombia")
+    #bd_cassandra.insertar_contador_destino("2024-11-02","Brasil")
+    #bd_cassandra.insertar_contador_destino("2024-11-08","Brasil")
     #bd_sql_server.create_tables_sql_server() --> si es la primera vez q te conectas a server sacale el comment
     #bd_sql_server.insert_data_sql_server()
     #bd_sql_server.insert_data_sql_server2()
-    """while True:
+    while True:
         print("Comencemos... Elige tu caso de uso")
-        print("1.login\n2. Agregar alojamiento \n3. Hacer una reserva\n4. Ver casos de uso\n5. Deseo terminar")
+        print("1. Login\n2. Agregar alojamiento \n3. Hacer una reserva\n4. Ver casos de uso\n5. Deseo terminar")
         opcion = input("Selecciona: ")
         if opcion == "1":
             bd_mongo.login()
@@ -47,15 +47,22 @@ if __name__ == "__main__":
             print("Que queres reservar? \n 1. Vuelos \n 2. Alojamiento \n 3. Paquete Turistico \n")
             a = int(input("Selecciona: "))
             if a == 1:
+                print ("--- VUELOS ---\n")
                 origen = input("Origen: ")
                 destino = input ("Destino: ")
                 vuelos_reserva = bd_mongo.consultar_vuelos(origen,destino)
                 reserva = bd_mongo.data_reserva(vuelos_reserva) #FALTA AGREGAR AL CLIENTE EN ESTOOOO EL ID, XQ ESTA MAL EL FLUJO DEL USUARIO
             elif a == 2:
+                print ("--- ALOJAMIENTOS ---\n")
                 ciudad = input ("En que ciudad se quiere alojar? ")
                 hoteles_reserva= bd_mongo.consultar_hotel(ciudad)
                 reserva = bd_mongo.data_reserva(hoteles_reserva)
-                
+
+            elif a == 3:
+                print ("--- PAQUETES TURISTICOS ---\n")
+                ciudad = input ("En que ciudad quiere el paquete? ")
+                paquete_reserva = bd_mongo.consultar_paquete(ciudad)
+                reserva = (bd_mongo.data_reserva(paquete_reserva))
             resumen_reserva = bd_mongo.consultar_reserva()
             pago = input("Quiere confirmar su reserva? (si/no)")
         elif opcion == "4":
@@ -63,7 +70,7 @@ if __name__ == "__main__":
         else:
             break
         
-    aca iria el triple comilla
+    #aca iria el triple comilla
 
     #Ejecutar las operaciones de MongoDB
     print("\nOperaciones en MongoDB:")
@@ -81,4 +88,4 @@ if __name__ == "__main__":
 
 #clientes -- mongo xq no se vuelve a modificar su datos
 # ciudad y paises -- cassandra y hoteles tmb
-# reservas sql
+# reservas sql """
