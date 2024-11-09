@@ -1,5 +1,5 @@
 # Importar las funciones desde los archivos
-
+import itertools
 import bd_cassandra
 import bd_mongo
 
@@ -27,25 +27,35 @@ def run_mongo_operations():
 if __name__ == "__main__":
     bd_cassandra.connect_cassandra()
     while True:
-        print("Comencemos... Elige tu caso de uso")
-        print("1.login\n2. Agregar alojamiento \n3. Hacer una reserva\n4. Ver casos de uso\n5. Deseo terminar")
+        print("<< BIENVENIDOS A DESPEGAR >>\n")
+        print("Comencemos... Elige tu caso de uso\n")
+        print("1. Login\n2. Agregar alojamiento \n3. Hacer una reserva\n4. Ver casos de uso\n5. Deseo terminar")
         opcion = input("Selecciona: ")
         if opcion == "1":
             bd_mongo.login()
         elif opcion == "2":
-            bd_mongo.insertar_hotel()
+            bd_mongo.data_hotel()
         elif opcion == "3":
-            print()
+            print("Que queres reservar? \n 1. Vuelos \n 2. Alojamiento \n 3. Paquete Turistico \n")
+            a = int(input("Selecciona: "))
+            if a == 1:
+                origen = input("Origen: ")
+                destino = input ("Destino: ")
+                vuelos_reserva = bd_mongo.consultar_vuelos(origen,destino)
+                reserva = bd_mongo.data_reserva(vuelos_reserva) #FALTA AGREGAR AL CLIENTE EN ESTOOOO EL ID, XQ ESTA MAL EL FLUJO DEL USUARIO
+            elif a == 2:
+                ciudad = input ("En que ciudad se quiere alojar? ")
+                hoteles_reserva= bd_mongo.consultar_hotel(ciudad)
+                reserva = bd_mongo.data_reserva(hoteles_reserva)
+                
+            resumen_reserva = bd_mongo.consultar_reserva()
+            pago = input("Quiere confirmar su reserva? (si/no)")
         elif opcion == "4":
             print()
         else:
             break
         
     
-
-    #Ejecutar las operaciones de MongoDB
-    print("\nOperaciones en MongoDB:")
-    run_mongo_operations()
 
     # Ejecutar las operaciones de SQL Server
     #print("\nOperaciones en SQL Server:")
