@@ -11,13 +11,48 @@ import bd_sql_server
 #    bd_cassandra.query_data_cassandra()
 
 
+def reserva():
+    print ("-- RESERVAS --\n")
+    print("1. Vuelos\n2. Alojamientos\n3. Paquetes Turisticos\n")
+    a = int(input("Que desea reservar? "))
+    if a == 1:
+        print ("--- VUELOS ---\n")
+        origen = input("Origen: ")
+        destino = input ("Destino: ")
+        vuelos_reserva = bd_mongo.consultar_vuelos(origen,destino)
+        reserva = bd_mongo.data_reserva(vuelos_reserva) #FALTA AGREGAR AL CLIENTE EN ESTOOOO EL ID, XQ ESTA MAL EL FLUJO DEL USUARIO
+    elif a == 2:
+        print ("--- ALOJAMIENTOS ---\n")
+        ciudad = input ("En que ciudad se quiere alojar? ")
+        hoteles_reserva= bd_mongo.consultar_hotel(ciudad)
+        reserva = bd_mongo.data_reserva(hoteles_reserva)
+                
+    elif a == 3:
+        print ("--- PAQUETES TURISTICOS ---\n")
+        ciudad = input ("En que ciudad quiere el paquete? ")
+        paquete_reserva = bd_mongo.consultar_paquete(ciudad)
+        reserva = bd_mongo.data_reserva(paquete_reserva)
+    else:
+        print("--ERROR--")
 
-def run_mongo_operations():
-    bd_mongo.login()
-    bd_mongo.operaciones()
-    bd_mongo.view_all_documents()
-    
-    
+
+def pago():
+    id = bd_mongo.consultar_id
+    monto = bd_mongo.consultar_monto
+    print(f"N° de reserva: {id}\nMonto a pagar: {monto}\n")
+    print("Seleccione el metodo de pago: \n")
+    print("1. Tarjeta de credito\n2. Tarjeta de debito\n 3. Mercado Pago")
+    mp = int(input("Seleccioná: "))
+    if mp == 1:
+        metodo = "Tarjeta de credito"
+    elif mp == 2:
+        metodo = "Tarjeta de debito"
+    elif mp == 3: 
+        metodo = "Mercado Pago"
+    else:
+        print("--ERROR--")
+    bd_sql_server.insert_pago(monto,metodo, id) 
+
 
 #def run_sql_server_operations():
  #  bd_sql_server.create_tables_sql_server()
@@ -25,8 +60,8 @@ def run_mongo_operations():
  #  bd_sql_server.query_data_sql_server()
 
 if __name__ == "__main__":
-    bd_sql_server.connect_sql_server()
-    bd_cassandra.connect_cassandra()
+   # bd_sql_server.connect_sql_server()
+    #bd_cassandra.connect_cassandra()
     #bd_cassandra.create_tables_cassandra()
     #bd_cassandra.insertar_contador_destino("2024-11-01","Colombia")
     #bd_cassandra.insertar_contador_destino("2024-11-02","Colombia")
@@ -42,37 +77,30 @@ if __name__ == "__main__":
     bd_cassandra.insertar_ciudades_demandadas("Argentina", "Buenos Aires")
     bd_cassandra.insertar_ciudades_demandadas("Argentina", "Rosario")
     while True:
-        print("Comencemos... Elige tu caso de uso")
-        print("1. Login\n2. Agregar alojamiento \n3. Hacer una reserva\n4. Ver casos de uso\n5. Deseo terminar")
-        opcion = input("Selecciona: ")
-        if opcion == "1":
+        print("<< BIENVENIDOS A DESPEGAR >> \n")
+        print("-" * 40) 
+        print("1. Login\n2. Ver casos de uso\n3. Deseo terminar\n")
+        opcion = int(input("Seleccioná: "))
+        if opcion == 1:
             bd_mongo.login()
-        elif opcion == "2":
-            bd_mongo.data_hotel()
-        elif opcion == "3":
-            print("Que queres reservar? \n 1. Vuelos \n 2. Alojamiento \n 3. Paquete Turistico \n")
-            a = int(input("Selecciona: "))
-            if a == 1:
-                print ("--- VUELOS ---\n")
-                origen = input("Origen: ")
-                destino = input ("Destino: ")
-                vuelos_reserva = bd_mongo.consultar_vuelos(origen,destino)
-                reserva = bd_mongo.data_reserva(vuelos_reserva) #FALTA AGREGAR AL CLIENTE EN ESTOOOO EL ID, XQ ESTA MAL EL FLUJO DEL USUARIO
-            elif a == 2:
-                print ("--- ALOJAMIENTOS ---\n")
-                ciudad = input ("En que ciudad se quiere alojar? ")
-                hoteles_reserva= bd_mongo.consultar_hotel(ciudad)
-                reserva = bd_mongo.data_reserva(hoteles_reserva)
-                
-
-            elif a == 3:
-                print ("--- PAQUETES TURISTICOS ---\n")
-                ciudad = input ("En que ciudad quiere el paquete? ")
-                paquete_reserva = bd_mongo.consultar_paquete(ciudad)
-                reserva = (bd_mongo.data_reserva(paquete_reserva))
-            resumen_reserva = bd_mongo.consultar_reserva()
-            pago = input("Quiere confirmar su reserva? (si/no)")
-        elif opcion == "4":
+            print("-" * 40) 
+            print("1. Reservar\n2. Agregar Alojamiento\n")
+            menu = int(input("Seleccioná: "))
+            if menu == 1:
+                reserva()
+            elif opcion == 2:
+                bd_mongo.data_hotel()
+            else:
+                print("---SELECCIONA 1 o 2 ---\n")
+                break
+            bd_mongo.consultar_reserva()
+            pago = input("Quiere pagar su reserva? (si/no): ") 
+            if pago == 'si':
+                pago()
+            else:
+                print("-- RESERVA CANCELADA --")
+                sys.exit()
+        elif opcion == 2:
             print("Que caso de uso queres ver? \n 1.¿Cuántas reservas se realizan diariamente en diferentes destinos?\n2.¿Qué tipos de alojamiento son más solicitados por los usuarios?\n3.¿Cuántas propiedades han sido agregadas recientemente en la plataforma?\n4.¿Cuáles son las ciudades más demandadas para alquileres en un país?\n5.¿Cuántas reservas han sido realizadas en destinos tropicales Y han recibido más de 4 estrellas?\n6.¿Qué tipos de alojamiento tienen precios por noche menores a $100 O están ubicados en zonas céntricas\n")
             a = int(input("Selecciona: "))
             if a==1:
@@ -82,13 +110,12 @@ if __name__ == "__main__":
             elif a==4:
                 bd_cassandra.caso4()
         else:
+            print("-- CIERRE DE SESION --")
             sys.exit()
         
     #aca iria el triple comilla
 """
-    #Ejecutar las operaciones de MongoDB
-    print("\nOperaciones en MongoDB:")
-    run_mongo_operations()
+
 
     # Ejecutar las operaciones de SQL Server
     #print("\nOperaciones en SQL Server:")
