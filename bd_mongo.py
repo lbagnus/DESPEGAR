@@ -919,3 +919,11 @@ def consultar_reserva():
         print("<< RESUMEN DE TU RESERVA >>")
         print("-" * 40) 
         imprimir_prolijo(doc)
+
+def consultar_monto():
+    monto = db.reserva.find_one({}, {"_id": 0, "monto": 1}, sort=[("_id", -1)])
+    return monto
+
+def consultar_id():
+    ultimo_id = db.reserva.find_one({}, {"_id": 1}, sort=[("_id", -1)])
+    return ultimo_id

@@ -37,12 +37,23 @@ def reserva():
 
 
 def pago():
-      #consulta a la reserva por el monto
+    id = bd_mongo.consultar_id
+    monto = bd_mongo.consultar_monto
+    print(f"N° de reserva: {id}\nMonto a pagar: {monto}\n")
     print("Seleccione el metodo de pago: \n")
-    mp = input()
-    #bd_sql_server.insert_pago(500.40,"tarjeta de debito", "12") 
+    print("1. Tarjeta de credito\n2. Tarjeta de debito\n 3. Mercado Pago")
+    mp = int(input("Seleccioná: "))
+    if mp == 1:
+        metodo = "Tarjeta de credito"
+    elif mp == 2:
+        metodo = "Tarjeta de debito"
+    elif mp == 3: 
+        metodo = "Mercado Pago"
+    else:
+        print("--ERROR--")
+    bd_sql_server.insert_pago(monto,metodo, id) 
 
-    
+
 #def run_sql_server_operations():
  #  bd_sql_server.create_tables_sql_server()
  #  bd_sql_server.insert_data_sql_server()
@@ -82,7 +93,9 @@ if __name__ == "__main__":
             pago = input("Quiere pagar su reserva? (si/no): ") 
             if pago == 'si':
                 pago()
-
+            else:
+                print("-- RESERVA CANCELADA --")
+                sys.exit()
         elif opcion == 2:
             print("Que caso de uso queres ver? \n 1.¿Cuántas reservas se realizan diariamente en diferentes destinos?\n2.¿Qué tipos de alojamiento son más solicitados por los usuarios?\n3.¿Cuántas propiedades han sido agregadas recientemente en la plataforma?\n4.¿Cuáles son las ciudades más demandadas para alquileres en un país?\n5.¿Cuántas reservas han sido realizadas en destinos tropicales Y han recibido más de 4 estrellas?\n6.¿Qué tipos de alojamiento tienen precios por noche menores a $100 O están ubicados en zonas céntricas\n")
             a = int(input("Selecciona: "))
