@@ -63,10 +63,10 @@ def insertar_contador_destino(fecha, destino):
 def insertar_alojamientos_solicitados(tipo):
     session = connect_cassandra()
     session.execute("""
-                UPDATE alojamientos_solicitados
-                SET cantidad = cantidad + 1
-                where tipo = %s 
-                        """, (tipo))
+    UPDATE alojamientos_solicitados
+    SET cantidad = cantidad + 1
+    WHERE tipo_alojamiento = %s
+    """, (tipo,))
     
 
 def insertar_ciudades_demandadas(pais,ciudad):
@@ -114,8 +114,26 @@ def caso1():
     # Cerrar la conexión
     session.shutdown()
 
+def caso2():
+    session = connect_cassandra()
+    rows = session.execute("""SELECT * FROM alojamientos_solicitados""")
+    alojamiento = ""
+    max = 0
 
+    for row in rows :
+        if row.cantidad > max: 
+            max = row.cantidad
+            alojamiento = row.tipo_alojamiento
+            
+    print(f"El tipo alojamiento {alojamiento} es el más demandado, con {max} cantidad de reservas")
 
+def caso4():
+    session = connect_cassandra()
+    rows = session.execute("""SELECT * FROM ciudades_demandadas""")
+    ciudades_ordenadas = sorted(rows, key=lambda x: x.cantidad, reverse=True)
+
+    for ciudad in ciudades_ordenadas[:3]:  # Las tres ciudades más demandadas
+        print(f"Ciudad: {ciudad.ciudad}, Cantidad: {ciudad.cantidad}")
 
 
 

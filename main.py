@@ -37,6 +37,10 @@ if __name__ == "__main__":
     #bd_sql_server.insert_data_sql_server2()
     #bd_sql_server.insert_pago(500.40,"tarjeta de debito", "12")
     #bd_sql_server.insert_pago(500.40,"tarjeta de debito", "12425")
+    bd_cassandra.insertar_alojamientos_solicitados("hostel")
+    bd_cassandra.insertar_ciudades_demandadas("Argentina", "Buenos Aires")
+    bd_cassandra.insertar_ciudades_demandadas("Argentina", "Buenos Aires")
+    bd_cassandra.insertar_ciudades_demandadas("Argentina", "Rosario")
     while True:
         print("Comencemos... Elige tu caso de uso")
         print("1. Login\n2. Agregar alojamiento \n3. Hacer una reserva\n4. Ver casos de uso\n5. Deseo terminar")
@@ -73,6 +77,10 @@ if __name__ == "__main__":
             a = int(input("Selecciona: "))
             if a==1:
                 bd_cassandra.caso1()
+            elif a==2:
+                bd_cassandra.caso2()
+            elif a==4:
+                bd_cassandra.caso4()
         else:
             sys.exit()
         
