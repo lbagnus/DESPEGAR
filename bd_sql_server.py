@@ -36,6 +36,18 @@ def create_tables_sql_server():
         CONSTRAINT FK_Ciudad_Pais FOREIGN KEY (id_pais) REFERENCES PAIS (id_pais)
     );
     """)
+
+    cursor.execute("""
+    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='PAGO' AND xtype='U')
+    CREATE TABLE PAGO (
+        id_pago int IDENTITY(1,1) PRIMARY KEY,
+        monto DECIMAL(10, 2),
+        fecha_pago DATETIME DEFAULT GETDATE(),
+        estado NVARCHAR(20) DEFAULT 'pago',
+        metodo_pago NVARCHAR(20),
+        id_reserva NVARCHAR(100) UNIQUE
+    );
+    """)
     
     # Confirmar la creación de las tablas
     connection.commit()
@@ -76,6 +88,18 @@ def insert_data_sql_server2():
         (4,4, 'París', '75001'),
         (5,5, 'Sídney', '2000');
     """)
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+def insert_pago(monto, metodo_pago, id_reserva):
+    connection = connect_sql_server()
+    cursor = connection.cursor()
+    cursor.execute("""
+    INSERT INTO PAGO (monto, metodo_pago, id_reserva) 
+    VALUES (?, ?, ?);
+    """, (monto, metodo_pago, id_reserva))
 
     connection.commit()
     cursor.close()

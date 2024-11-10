@@ -2,9 +2,13 @@ from gevent import monkey
 monkey.patch_all()
 from cassandra.cluster import Cluster
 from cassandra.query import SimpleStatement
+from datetime import datetime
+from datetime import datetime, timedelta
+import datetime
+import datetime
+from cassandra.util import Date
 
 def connect_cassandra():
-    print("llegue")
     cluster = Cluster(['localhost'])
     session = cluster.connect()
 
@@ -78,3 +82,43 @@ def query_data_cassandra():
     rows = session.execute("SELECT * FROM reservas")
     for row in rows:
         print(row)
+
+
+def formato_fecha(cassandra_date):
+    if cassandra_date is not None:
+        # Si es un objeto 'Date' de Cassandra
+        if isinstance(cassandra_date, Date):
+            # Convertir a una fecha estándar si aún no lo es
+            return str(cassandra_date)  # Convierte directamente a string en formato 'YYYY-MM-DD'
+        elif isinstance(cassandra_date, datetime.date):
+            # Si ya es un objeto datetime.date de Python, simplemente lo formateamos
+            return cassandra_date.strftime("%Y-%m-%d")
+        elif isinstance(cassandra_date, str):
+            return cassandra_date
+    return "Fecha no disponible"
+
+
+def caso1():
+    session = connect_cassandra()
+    
+    # Ejecutar la consulta y obtener los resultados
+    rows = session.execute("""SELECT * FROM reservas_por_destino""")
+    
+    # Imprimir los resultados de manera más legible
+    print(f"{'Fecha':<15}{'Destino':<20}{'Reservas':<10}")
+    print("-" * 50)
+    for row in rows:
+        fecha_formateada = formato_fecha(row.fecha)  # Convertir la fecha a un formato legible
+        print(f"{fecha_formateada:<15}{row.destino:<20}{row.reservas:<10}")
+    
+    # Cerrar la conexión
+    session.shutdown()
+
+
+
+
+
+
+
+
+

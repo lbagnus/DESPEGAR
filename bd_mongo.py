@@ -321,7 +321,7 @@ vuelos = [
         "aerolinea": "Philippine Airlines",
         "precio": 100
     }]
-#db.vuelos.insert_many(vuelos)
+#db.vuelos.insert_many(vuelos)s
 
 #INSERT PAQUETES
 paquetes = [
@@ -831,7 +831,7 @@ def consultar_vuelos(origen,destino):
     
     if not vuelos:
         print("No hay vuelos disponibles de", origen, "a", destino)
-        return  # Sale si no hay vuelos
+        return None  # Sale si no hay vuelos
 
     for i, vuelo in enumerate(vuelos, 1):
         # Imprimir el vuelo actual
