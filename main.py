@@ -88,7 +88,7 @@ if __name__ == "__main__":
             menu = int(input("Seleccioná: "))
             if menu == 1:
                 reserva()
-            elif opcion == 2:
+            elif menu == 2:
                 bd_mongo.data_hotel()
             else:
                 print("---SELECCIONA 1 o 2 ---\n")
@@ -109,6 +109,8 @@ if __name__ == "__main__":
                 bd_cassandra.caso2()
             elif a==4:
                 bd_cassandra.caso4()
+            elif a==6:
+                bd_mongo.caso6()
         else:
             print("-- CIERRE DE SESION --")
             sys.exit()
