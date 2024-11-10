@@ -88,7 +88,7 @@ if __name__ == "__main__":
             menu = int(input("Seleccioná: "))
             if menu == 1:
                 reserva()
-            elif opcion == 2:
+            elif menu == 2:
                 bd_mongo.data_hotel()
             else:
                 print("---SELECCIONA 1 o 2 ---\n")
