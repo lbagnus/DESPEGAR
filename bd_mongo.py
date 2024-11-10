@@ -969,7 +969,6 @@ def caso5():
 
 def caso6():
     # Establecer la conexión con MongoDB
-    client = MongoClient("mongodb://localhost:27017/")
     hoteles = db["hotel"]  # Asegúrate de que el nombre de la colección es 'hotel'
     # Realizar la consulta y contar resultados
     resultados = list(hoteles.find({
