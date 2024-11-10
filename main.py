@@ -137,6 +137,8 @@ if __name__ == "__main__":
                 bd_cassandra.caso4()
             elif a == 5:
                 bd_mongo.caso5()
+            elif a == 6:
+                bd_mongo.caso6()
         else:
             print("-- CIERRE DE SESION --")
             sys.exit()

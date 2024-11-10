@@ -966,6 +966,33 @@ def caso5():
     print(f"Cantidad de reservas que cumplen con los criterios: {cantidad_reservas}\n")
     
 
-    
+
+def caso6():
+    # Establecer la conexión con MongoDB
+    client = MongoClient("mongodb://localhost:27017/")
+    hoteles = db["hotel"]  # Asegúrate de que el nombre de la colección es 'hotel'
+    # Realizar la consulta y contar resultados
+    resultados = list(hoteles.find({
+        "$or": [
+            {"precio": {"$lt": 100}},
+            {"direccion.zona": "Centrica"}
+        ]
+    }))
+    # Mostrar los resultados
+    for hotel in resultados:
+        print(f"Nombre: {hotel['nombre']}")
+        print(f"Tipo de Alojamiento: {hotel['tipo_alojamiento']}")
+        print(f"Precio por Noche: {hotel['precio']}")
+        print(f"Zona: {hotel['direccion']['zona']}")
+        print("---")
+    if len(resultados) == 0:
+        print("No hay hoteles que cumplan con esa condición")
+
+
+
+ 
+
+
+   
 
     
