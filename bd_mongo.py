@@ -27,7 +27,8 @@ def telefono():
     return telefonos
 
 def personas_reserva(cantidad):
-    personas = []
+    ultimo_cliente = db.clientes.find_one({}, {"_id": 0, "nombre": 1}, sort=[("_id", -1)])
+    personas = [ultimo_cliente]
         
     for i in range(cantidad):
         print(f"\nPersona {i + 1}:")
@@ -82,18 +83,16 @@ def data_hotel():
         insertar_hotel(datos_hotel)
         print ("--- Se ha registrado correctamente ---\n ")
 
-
 def data_reserva(reserva):
     respuesta = input("¿Quiere agregar personas a la reserva? (si/no): ").strip().lower()
-    
     if respuesta == "si":
         cantidad = int(input("¿Cuántas personas desea agregar?: "))
     else:
-        return None
+        cantidad = 0
     datos_reserva = {
         "_id": ObjectId(),
         "resumen": reserva,
-        "estado": "Pago",
+        "estado": "Pendiente de pago",
         "personas_reserva": personas_reserva(cantidad),
         "monto": monto(reserva,cantidad),
     }
@@ -349,7 +348,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "hotel"
         },
-        "precio_total": 1500
+        "precio": 1500
     },
     {
         "_id": ObjectId(),
@@ -375,7 +374,7 @@ paquetes = [
             "habitacion": "simple",
             "alojamiento": "hotel"
         },
-        "precio_total": 1100
+        "precio": 1100
     },
     {
         "_id": ObjectId(),
@@ -401,7 +400,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "hotel"
         },
-        "precio_total": 1150
+        "precio": 1150
     },
     {
         "_id": ObjectId(),
@@ -427,7 +426,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "hotel"
         },
-        "precio_total": 2400
+        "precio": 2400
     },
     {
         "_id": ObjectId(),
@@ -453,7 +452,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "hotel"
         },
-        "precio_total": 2100
+        "precio": 2100
     },
     {
         "_id": ObjectId(),
@@ -479,7 +478,7 @@ paquetes = [
             "habitacion": "simple",
             "alojamiento": "hotel"
         },
-        "precio_total": 1500
+        "precio": 1500
     },
     {
         "_id": ObjectId(),
@@ -505,7 +504,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "hotel"
         },
-        "precio_total": 1900
+        "precio": 1900
     },
     {
         "_id": ObjectId(),
@@ -531,7 +530,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "hotel"
         },
-        "precio_total": 950
+        "precio": 950
     },
      {
         "_id": ObjectId(),
@@ -557,7 +556,7 @@ paquetes = [
             "habitacion": "simple",
             "alojamiento": "cabaña"
         },
-        "precio_total": 1800
+        "precio": 1800
     },
     {
         "_id": ObjectId(),
@@ -583,7 +582,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "hotel"
         },
-        "precio_total": 1400
+        "precio": 1400
     },
     {
         "_id": ObjectId(),
@@ -609,7 +608,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "cabaña"
         },
-        "precio_total": 2800
+        "precio": 2800
     },
     {
         "_id": ObjectId(),
@@ -635,7 +634,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "resort"
         },
-        "precio_total": 3700
+        "precio": 3700
     },
     {
         "_id": ObjectId(),
@@ -661,7 +660,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "cabaña"
         },
-        "precio_total": 3000
+        "precio": 3000
     },
     {
         "_id": ObjectId(),
@@ -687,7 +686,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "hotel"
         },
-        "precio_total": 2100
+        "precio": 2100
     },
     {
         "_id": ObjectId(),
@@ -713,7 +712,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "riad"
         },
-        "precio_total": 1500
+        "precio": 1500
     },
     {
         "_id": ObjectId(),
@@ -739,7 +738,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "resort"
         },
-        "precio_total": 2000
+        "precio": 2000
     },
     {
         "_id": ObjectId(),
@@ -765,7 +764,7 @@ paquetes = [
             "habitacion": "doble",
             "alojamiento": "hotel"
         },
-        "precio_total": 2600
+        "precio": 2600
     }
 ]
 #db.paquetes.insert_many(paquetes)
@@ -776,31 +775,6 @@ def insertar_hotel(data):
     db.hotel.insert_one(data)
 def insertar_reserva(data):
     db.reserva.insert_one(data)
-
-def eliminar ():
-    db.pais.drop()
-    db.ciudad.drop()
-    db.clientes.drop()
-    db.vuelo.drop()
-    db.hotel.drop()
-    db.paqueteTuristico.drop()
-    db.reservas.drop()
-    db.pago.drop()
-    db.personaEnReserva.drop()
-    # Verificar colecciones restantes
-    print("Colecciones actuales en la base de datos:", db.list_collection_names())
-#def view_all_documents():
-    db = connect_mongodb()
-    collections = db.list_collection_names()  # Obtiene todas las colecciones en la base de datos
-
-    for collection in collections:
-        print(f"\nDocumentos en la colección '{collection}':")
-        documents = db[collection].find()  # Obtiene todos los documentos de la colección
-        for doc in documents:
-            print(doc)
-#view_all_documents()
-#eliminar()
-
 
 def imprimir_prolijo(data, indent=0):
     """
@@ -896,7 +870,6 @@ def consultar_paquete(ciudad):
 
     for i, paquetes in enumerate(paquetes, 1):
         print(f"<< {i}. PAQUETE DE ALOJAMIENTO >>")
-        print(f"ID: {paquetes['_id']}")
         print(f"Nombre: {paquetes['nombre']}")
         print(f"Descripción: {paquetes['descripcion']}")
         print(f"Precio individual: ${paquetes['precio']}")
@@ -924,14 +897,14 @@ def consultar_paquete(ciudad):
         print(f"    Habitación: {hotel['habitacion']}")
         print(f"    Alojamiento: {hotel['alojamiento']}")
 
-        print(f"\nPrecio Total: ${paquetes['precio_total']}\n")
+        print(f"\nPrecio Total: ${paquetes['precio']}\n")
        
         print("-" * 40)  # Línea separadora
         
         # Preguntar si desea reservar
         respuesta = input("¿Desea reservar este paquete? (si/no): ").strip().lower()
         if respuesta == "si":
-            print("Procesando la reserva del paquete...")
+            print("Procesando la reserva del paquete... \n")
             return paquetes 
         
         print("Mostrando el siguiente paquete...\n")
@@ -944,4 +917,5 @@ def consultar_reserva():
     ultima_reserva = db.reserva.find({}, {"_id": 0,"resumen._id": 0,}).sort("_id", -1).limit(1)
     for doc in ultima_reserva:
         print("<< RESUMEN DE TU RESERVA >>")
+        print("-" * 40) 
         imprimir_prolijo(doc)
