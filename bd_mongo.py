@@ -1,8 +1,9 @@
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import json
 from bson import ObjectId
+from pprint import pprint
 import bd_cassandra
 
 def connect_mongodb():
@@ -76,9 +77,9 @@ def data_hotel():
             "tipo_alojamiento": input("Ingrese el tipo de alojamiento: "),
             "nEstrellas": input("Ingresa el número de estrellas: "),
             "tipo_Habitaciones" : input("Ingrese el tipo de habitacion: "),
-            "precio" : int(input("Ingrese el precio por noche: ")),
             "disponibilidad": disponibilidad(),
             "fecha": datetime.now(),
+            "precio" : int(input("Ingrese el precio por noche: ")),
         }
         insertar_hotel(datos_hotel)
         print ("--- Se ha registrado correctamente ---\n ")
@@ -804,7 +805,7 @@ def consultar_vuelos(origen,destino):
     vuelos = list(db.vuelos.find({"ciudad_origen": origen, "ciudad_destino": destino}))
     
     if not vuelos:
-        print("No hay vuelos disponibles de", origen, "a", destino)
+        print("No hay vuelos disponibles de", origen, "a", destino, "\n")
         return None  # Sale si no hay vuelos
 
     for i, vuelo in enumerate(vuelos, 1):
@@ -834,7 +835,7 @@ def consultar_hotel(ciudad):
     hotel = list(db.hotel.find({"direccion.ciudad": ciudad}))
     
     if not hotel:
-        print("No hay alojamientos disponibles en", ciudad)
+        print("No hay alojamientos disponibles en", ciudad,"\n")
         return 
 
     for i, hotel in enumerate(hotel, 1):
@@ -865,7 +866,7 @@ def consultar_paquete(ciudad):
     paquetes = list(db.paquetes.find({"ciudad": ciudad}))
     
     if not paquetes:
-        print("No hay paquetes disponibles en", ciudad)
+        print("No hay paquetes disponibles en", ciudad,"\n")
         return 
 
     for i, paquetes in enumerate(paquetes, 1):
@@ -927,3 +928,44 @@ def consultar_monto():
 def consultar_id():
     ultimo_id = db.reserva.find_one({}, {"_id": 1}, sort=[("_id", -1)])
     return ultimo_id
+
+def caso3():
+    ultimos_3_dias = datetime.now() - timedelta(days=3)
+    alojamientos_recientes = db.hotel.find({"fecha": {"$gte": ultimos_3_dias}},{"_id": 0})
+    print("<< ALOJAMIENTOS CARGADOS RECIENTEMENTE >>")
+    for alojamiento in alojamientos_recientes:
+        print(f"Nombre: {alojamiento['nombre']}")
+        print(f"Dirección: {alojamiento['direccion']['calle']} {alojamiento['direccion']['numero']}, {alojamiento['direccion']['ciudad']}, {alojamiento['direccion']['pais']}")
+        print(f"Zona: {alojamiento['direccion']['zona']}")
+        print(f"Tipo de Alojamiento: {alojamiento['tipo_alojamiento']}")
+        print(f"Estrellas: {alojamiento['nEstrellas']}")
+        print(f"Tipo de Habitaciones: {alojamiento['tipo_Habitaciones']}")
+        print(f"Precio: {alojamiento['precio']}")
+        print(f"Disponibilidad: {'Sí' if alojamiento['disponibilidad'] else 'No'}")
+        print(f"Fecha de Adición: {alojamiento['fecha'].strftime('%Y-%m-%d %H:%M:%S')}")
+        print("-" * 50) 
+
+def agregarResenia(resenia,id):
+    db.reserva.update_one(
+    {"_id": id},  
+    {"$set": {"estrellas": resenia}}  
+)
+
+def caso5():
+    ciudades_Tropicales = ["Miami", "Cancun", "San Juan", "Bogota", "Panama City", "Medellin", "Sao Paulo", "Guadalajara", "Mexico City", "Manila", "Playa del Carmen", "Punta Cana", "Manaos"]
+    filtro = {
+    "estrellas": {"$gte": 4},
+    "$or": [
+        {"resumen.ciudad_origen": {"$in": ciudades_Tropicales}},  # Si ciudad_origen está en la lista
+        {"resumen.ciudad_destino": {"$in": ciudades_Tropicales}},  # Si ciudad_destino está en la lista
+        {"resumen.ciudad": {"$in": ciudades_Tropicales}},  # Si ciudad está en el campo ciudad de un paquete
+        {"resumen.direccion.ciudad": {"$in": ciudades_Tropicales}}  # Si ciudad está en dirección.ciudad de un alojamiento
+    ]
+}
+    cantidad_reservas = db.reserva.count_documents(filtro)
+    print(f"Cantidad de reservas que cumplen con los criterios: {cantidad_reservas}\n")
+    
+
+    
+
+    
